@@ -5,49 +5,55 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    /* Đổi nền tối giống trong hình */
+    background-color: #2c3e50; 
     overflow: hidden;
 }
 
 /* Khung chứa vòng quay và kim chỉ */
 .wheel-container {
     position: relative;
-    width: 350px;
-    height: 350px;
+    /* Làm vòng quay lớn hơn một chút */
+    width: 400px;
+    height: 400px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Kim chỉ (hình tam giác) */
+/* Kim chỉ (chuyển sang bên phải) */
 .pointer {
     position: absolute;
-    top: -20px; /* Nằm bên trên vòng quay */
+    /* Chuyển từ trên cùng sang bên phải */
+    right: -20px; 
+    top: 50%;
+    transform: translateY(-50%);
     width: 0;
     height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-top: 30px solid #e74c3c; /* Màu đỏ */
+    /* Đổi hướng tam giác */
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-right: 30px solid #fff; /* Màu xanh */
     z-index: 10;
-    /* Dịch chuyển tâm 1 chút để đầu nhọn chỉ đúng tâm */
-    transform: translateX(-50%);
-    left: 50%;
 }
 
-/* Nút quay */
+/* Nút quay (ẩn chữ, biến thành vòng tròn trắng) */
 #spin-btn {
     position: absolute;
     width: 80px;
     height: 80px;
     border-radius: 50%;
     background-color: #fff;
-    border: 5px solid #ccc;
+    border: 5px solid #fff; /* Border trắng */
     font-weight: bold;
     font-size: 18px;
-    color: #333;
+    
+    /* Ẩn văn bản "QUAY" */
+    color: transparent; 
+    user-select: none; /* Ngăn người dùng chọn văn bản */
+    
     cursor: pointer;
     z-index: 5;
-    /* Hiệu ứng khi nhấn */
     transition: transform 0.1s ease;
 }
 
@@ -55,78 +61,182 @@ body {
     transform: scale(0.95);
 }
 
-/* Vòng quay chính */
+/* Vòng quay chính (dùng conic-gradient) */
 .wheel {
     position: absolute;
-    width: 300px;
-    height: 300px;
-    border: 10px solid #34495e;
+    /* Cập nhật kích thước để khớp với container */
+    width: 100%;
+    height: 100%;
+    /* Bỏ border ngoài */
+    /* border: 10px solid #34495e; */
     border-radius: 50%;
-    background-color: #ecf0f1;
     overflow: hidden;
-    
-    /* Đây là mấu chốt: hiệu ứng quay mượt mà */
-    /* Chúng ta dùng ease-out để nó chậm dần khi dừng */
-    transition: transform 5s ease-out; 
+    transition: transform 5s ease-out;
+
+    /* Mấu chốt: Dùng CONIC-GRADIENT */
+    --color-green: #2ecc71;
+    --color-yellow: #f1c40f;
+    --color-red: #e74c3c;
+    --color-blue: #3498db;
+
+    /* Tạo 10 ô màu (360 độ / 10 = 36 độ mỗi ô) */
+    background: conic-gradient(
+        var(--color-green)   0deg 36deg,
+        var(--color-yellow) 36deg 72deg,
+        var(--color-red)    72deg 108deg,
+        var(--color-blue)  108deg 144deg,
+        var(--color-green) 144deg 180deg,
+        var(--color-yellow) 180deg 216deg,
+        var(--color-red)   216deg 252deg,
+        var(--color-blue)  252deg 288deg,
+        var(--color-green) 288deg 324deg,
+        var(--color-yellow) 324deg 360deg
+    );
 }
 
-/* Từng ô số */
+/* Từng ô số (HTML vẫn là 10 ô) */
 .number {
     position: absolute;
     width: 100%;
     height: 100%;
     text-align: center;
     
-    /* Tính góc quay cho từng số */
-    --angle: calc(var(--i) * 36deg); /* 360 độ / 10 số */
-    
-    /* 1. Quay ô số đến vị trí
-       2. Đẩy nó ra xa tâm (translateY -150px)
-    */
+    /* Tính góc quay cho 10 số (giống hệt logic JS) */
+    /* ĐÃ SỬA: Thêm 18deg (36/2) để xoay vào GIỮA ô */
+    --angle: calc(var(--i) * 36deg + 18deg); 
     transform: rotate(var(--angle));
 }
 
 /* Phần tử span chứa text số */
 .number span {
     display: block;
-    padding-top: 15px; /* Đẩy số ra gần mép */
+    padding-top: 20px; /* Đẩy số ra gần mép */
     font-size: 20px;
     font-weight: bold;
-    color: #2c3e50;
     
-    /* Xoay ngược số lại để nó luôn đứng thẳng 
-      (ví dụ: ô quay 90 độ, số xoay -90 độ)
-    */
+    /* Đổi chữ thành màu trắng và thêm bóng */
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+
+    /* ĐÃ SỬA: Xoay 90 độ để "đứng" thẳng trong ô */
     transform: rotate(90deg);
 }
 
-/* Tạo màu nền xen kẽ cho các ô (dùng clip-path) */
+/* Xóa các quy tắc '::before' và 'nth-child' cũ */
+/* Chúng không còn cần thiết nữa vì đã dùng conic-gradient */
 .number::before {
-    content: '';
-    position: absolute;
+    display: none;
+}
+.number:nth-child(odd)::before {
+    background-color: unset;
+}
+.number:nth-child(even)::before {
+    background-color: unset;
+}
+.number:nth-child(odd) span {
+    color: #fff; /* Ghi đè lại để đảm bảo tất cả đều trắng */
+}
+
+/* ================================== */
+/* CSS MỚI CHO POP-UP (MODAL) */
+/* ================================== */
+
+/* Lớp phủ nền mờ toàn màn hình */
+.modal-overlay {
+    position: fixed; /* Hiển thị đè lên mọi thứ */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* Tạo hình nêm (wedge) chiếm 36 độ 
-      (clip-path) 
-    */
-    clip-path: polygon(50% 50%, 50% 0, 80.9% 0, 50% 50%); /* 36 deg wedge */
-    
-    /* Xoay hình nêm để nó căn đúng vào ô */
-    transform: rotate(-18deg); /* Dịch 1/2 góc (36/2) */
-    z-index: -1;
+    background-color: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Luôn ở trên cùng */
 }
 
-/* Tô màu xen kẽ */
-.number:nth-child(odd)::before {
-    background-color: #3498db; /* Xanh */
-}
-.number:nth-child(even)::before {
-    background-color: #ecf0f1; /* Trắng */
+/* Khung nội dung chính của pop-up */
+.modal-content {
+    background-color: #333; /* Nền xám đen cho thân */
+    color: #fff; /* Chữ trắng */
+    border-radius: 8px;
+    overflow: hidden; /* Bo góc cho cả header bên trong */
+    width: 90%;
+    max-width: 400px; /* Chiều rộng tối đa */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    /* Thêm animation nhỏ khi xuất hiện */
+    animation: fadeIn 0.3s ease-out;
 }
 
-/* Đổi màu chữ cho ô màu xanh để dễ đọc */
-.number:nth-child(odd) span {
+/* Header (thanh màu xanh) */
+.modal-header {
+    background-color: #3498db; /* Màu xanh dương (giống hình) */
+    padding: 12px 15px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Nút 'x' ở góc header */
+.modal-close-x {
+    background: none;
+    border: none;
     color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1; /* Căn chỉnh chiều cao */
+}
+
+/* Thân (chứa tên người thắng) */
+.modal-body {
+    padding: 40px 20px;
+    font-size: 36px; /* Tên to, rõ */
+    text-align: center;
+    font-weight: bold;
+    color: #fff; /* Đảm bảo chữ trắng */
+}
+
+/* Chân (chứa 2 nút) */
+.modal-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid #444; /* Đường viền ngăn cách */
+}
+
+/* Định dạng chung cho 2 nút ở footer */
+.modal-footer button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+/* Nút 'Close' (màu xám) */
+.modal-close-btn {
+    background-color: #777;
+    color: #fff;
+}
+
+/* Nút 'Remove' (màu xanh) */
+.modal-remove-btn {
+    background-color: #3498db; /* Màu xanh giống header */
+    color: #fff;
+}
+
+/* Animation khi pop-up xuất hiện */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
