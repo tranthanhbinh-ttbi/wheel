@@ -1,0 +1,132 @@
+/* Thiết lập cơ bản cho trang */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    overflow: hidden;
+}
+
+/* Khung chứa vòng quay và kim chỉ */
+.wheel-container {
+    position: relative;
+    width: 350px;
+    height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Kim chỉ (hình tam giác) */
+.pointer {
+    position: absolute;
+    top: -20px; /* Nằm bên trên vòng quay */
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 30px solid #e74c3c; /* Màu đỏ */
+    z-index: 10;
+    /* Dịch chuyển tâm 1 chút để đầu nhọn chỉ đúng tâm */
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+/* Nút quay */
+#spin-btn {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 5px solid #ccc;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    z-index: 5;
+    /* Hiệu ứng khi nhấn */
+    transition: transform 0.1s ease;
+}
+
+#spin-btn:active {
+    transform: scale(0.95);
+}
+
+/* Vòng quay chính */
+.wheel {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 10px solid #34495e;
+    border-radius: 50%;
+    background-color: #ecf0f1;
+    overflow: hidden;
+    
+    /* Đây là mấu chốt: hiệu ứng quay mượt mà */
+    /* Chúng ta dùng ease-out để nó chậm dần khi dừng */
+    transition: transform 5s ease-out; 
+}
+
+/* Từng ô số */
+.number {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    
+    /* Tính góc quay cho từng số */
+    --angle: calc(var(--i) * 36deg); /* 360 độ / 10 số */
+    
+    /* 1. Quay ô số đến vị trí
+       2. Đẩy nó ra xa tâm (translateY -150px)
+    */
+    transform: rotate(var(--angle));
+}
+
+/* Phần tử span chứa text số */
+.number span {
+    display: block;
+    padding-top: 15px; /* Đẩy số ra gần mép */
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    
+    /* Xoay ngược số lại để nó luôn đứng thẳng 
+      (ví dụ: ô quay 90 độ, số xoay -90 độ)
+    */
+    transform: rotate(90deg);
+}
+
+/* Tạo màu nền xen kẽ cho các ô (dùng clip-path) */
+.number::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Tạo hình nêm (wedge) chiếm 36 độ 
+      (clip-path) 
+    */
+    clip-path: polygon(50% 50%, 50% 0, 80.9% 0, 50% 50%); /* 36 deg wedge */
+    
+    /* Xoay hình nêm để nó căn đúng vào ô */
+    transform: rotate(-18deg); /* Dịch 1/2 góc (36/2) */
+    z-index: -1;
+}
+
+/* Tô màu xen kẽ */
+.number:nth-child(odd)::before {
+    background-color: #3498db; /* Xanh */
+}
+.number:nth-child(even)::before {
+    background-color: #ecf0f1; /* Trắng */
+}
+
+/* Đổi màu chữ cho ô màu xanh để dễ đọc */
+.number:nth-child(odd) span {
+    color: #fff;
+}
