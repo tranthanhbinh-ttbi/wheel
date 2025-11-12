@@ -4,9 +4,9 @@ const spinBtn = document.querySelector('#spin-btn');
 const degreesPerNumber = 36; // 360 độ / 10 ô = 36 độ mỗi ô
 
 // SỬA ĐỔI: Để trúng "34" (là ô thứ 9, index 8)
-const targetIndex = 8;
+const targetIndex = 6;
 // Văn bản hiển thị kết quả
-const winnerText = "34. Tang Le Gia Bao";
+const winnerText = "32. Tăng Lê Gia Bảo";
 
 const targetAngle = targetIndex * degreesPerNumber;
 
